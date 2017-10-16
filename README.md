@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/saj/vault-auto-unseal/tree/master.svg?style=svg&circle-token=f0164b373e028d3daadeec4500d8e4747e51f07d)](https://circleci.com/gh/saj/vault-auto-unseal/tree/master)
 
-Initialise a new Vault server and save unseal keys for later use.
+Automatically init and unseal a Vault server.
 
 For those occasions where a Vault server operating in [dev mode][vault-dev-mode]
 is not sufficient, this tool may be employed in conjunction with build tools,
