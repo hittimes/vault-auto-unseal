@@ -18,6 +18,17 @@ plaintext on the filesystem.
 Do not employ this tool in production Vault deployments.
 
 
+# Installation
+
+Docker images are available from [c2fq/vault-auto-unseal][dh-repo].
+
+Alternatively, on a system equipped with a Go compiler:
+
+    go get github.com/saj/vault-auto-unseal
+
+[dh-repo]: https://hub.docker.com/r/c2fq/vault-auto-unseal/
+
+
 # Usage
 
 1. Start Vault.
