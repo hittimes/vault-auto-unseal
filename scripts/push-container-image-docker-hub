@@ -24,8 +24,9 @@ main() {
     return 2
   fi
 
-  echo "${DOCKER_HUB_PASSWORD}" \
-    | docker login --username "${DOCKER_HUB_USERNAME}" --password-stdin
+  docker login \
+    --username "${DOCKER_HUB_USERNAME}" \
+    --password "${DOCKER_HUB_PASSWORD}"
 
   set -x
 
