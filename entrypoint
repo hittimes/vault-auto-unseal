@@ -1,0 +1,5 @@
+#!/bin/sh
+
+export COLUMNS="${COLUMNS:-80}"
+
+exec /usr/local/bin/vault-auto-unseal "$@"

@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -e
+set -x
+
+
+main() {
+  local -r image="$1"
+
+  if [[ -z "${image}" ]]; then
+    echo "Required argument is missing: IMAGE" >&2
+    return 2
+  fi
+
+  set +x
+
+  if [[ -z "${DOCKER_HUB_USERNAME}" ]]; then
+    echo "Required environment variable is missing: DOCKER_HUB_USERNAME" >&2
+    return 2
+  fi
+
+  if [[ -z "${DOCKER_HUB_PASSWORD}" ]]; then
+    echo "Required environment variable is missing: DOCKER_HUB_PASSWORD" >&2
+    return 2
+  fi
+
+  echo "${DOCKER_HUB_PASSWORD}" \
+    | docker login --username "${DOCKER_HUB_USERNAME}" --password-stdin
+
+  set -x
+
+  docker push "${image}"
+}
+
+
+main "$@"

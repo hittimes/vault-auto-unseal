@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -u
+
+readonly DIR="$(dirname "$0")"
+
+readonly version="$("${DIR}/print-version")"
+if [[ -z "${version}" ]]; then
+  echo "version is null" >&2
+  exit 1
+fi
+
+readonly container_name="c2fq/vault-auto-unseal"
+readonly container_tag="${version}"
+echo "${container_name}:${container_tag}"

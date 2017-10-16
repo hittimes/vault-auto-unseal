@@ -1,0 +1,87 @@
+version: 2
+
+run-install-alpine-pkgs: &run-install-alpine-pkgs
+  name: Install Alpine packages
+  command: |
+    set -x
+    retry() {
+      for i in $(seq 5); do
+        set +e
+        $@
+        rc=$?
+        set -e
+        [ "${rc}" -eq 0 ] && return 0
+        sleep 1
+      done
+      return 1
+    }
+    retry apk update
+    retry apk -v --no-progress add \
+      bash \
+      docker \
+      git \
+      make \
+      openssh-client
+
+jobs:
+  build:
+    docker:
+      - image: alpine:3.6
+    working_directory: ~/project
+    steps:
+      - run:
+          << : *run-install-alpine-pkgs
+      - checkout
+      - setup_remote_docker:
+          # alpine 3.6 ships with docker-17.05.0.
+          version: 17.05.0-ce
+      - run: make container
+      - run:
+          name: Save container image
+          command: |
+            set -x
+            readonly image="$(scripts/print-docker-container-name-tag)"
+            [[ -n "${image}" ]]
+            mkdir -p build
+            docker save "${image}" | gzip >build/container.tar.gz
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
+  release:
+    docker:
+      - image: alpine:3.6
+    working_directory: ~/project
+    steps:
+      - run:
+          << : *run-install-alpine-pkgs
+      - checkout
+      - attach_workspace:
+          at: .
+      - setup_remote_docker:
+          # alpine 3.6 ships with docker-17.05.0.
+          version: 17.05.0-ce
+      - run:
+          name: Load container image
+          command: |
+            set -x
+            gunzip -c build/container.tar.gz | docker load
+      - run: make container-push
+
+workflows:
+  version: 2
+  build_release:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - release:
+          context: org-global
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v[0-9]+.*/
+            branches:
+              ignore: /.*/
