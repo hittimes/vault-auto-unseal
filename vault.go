@@ -117,8 +117,8 @@ func vaultUnseal(ctx context.Context, params vaultUnsealParams, ss *secretsStash
 	if rerr != nil {
 		return rerr
 	}
-	if err := sec.Validate(); err != nil {
-		return err
+	if verr := sec.Validate(); verr != nil {
+		return verr
 	}
 
 	cfg, err := config()
